@@ -3,18 +3,18 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-st.set_page_config(page_title="DCF Annahmen Sandbox", layout="centered")
+st.set_page_config(page_title="Sandbox des hypothèses DCF", layout="centered")
 
 DISCOUNT_RATE = 0.20
 LINE_COLOR = "#AF1A1D"  # RGB (175, 26, 29)
 
 # ---------- Instructions ----------
 st.markdown("""
-### Verwendung dieses Tools
-- Eines der vier Szenarien aus dem Dell-Fall kann im Dropdown-Menü ausgewählt werden.
-- Die jährlichen Zahlungsströme können bei Bedarf in den Eingabefeldern angepasst werden.
-- Das Diagramm wird automatisch auf Basis der Eingaben aktualisiert.
-- Das Bewertungsergebnis wird automatisch berechnet und unterhalb des Diagramms angezeigt.
+### Comment utiliser cet outil
+- Choisir l’un des quatre scénarios du cas Dell dans le menu déroulant.
+- Modifier, si souhaité, les flux de trésorerie annuels dans les champs de saisie.
+- Le graphique se met à jour automatiquement sur la base des entrées.
+- Le résultat de l’évaluation est calculé automatiquement et affiché sous le graphique.
 """)
 
 # ---------- Preset scenarios ----------
@@ -28,10 +28,10 @@ SCENARIOS = {
 years = [1, 2, 3, 4, 5]
 
 # ---------- Scenario selection ----------
-st.subheader("Eingabe der Zahlungsströme")
+st.subheader("Saisie des flux de trésorerie")
 
 selected_scenario = st.selectbox(
-    "Wähle eine Entwicklung der Zahlungsströme",
+    "Choisir une évolution des flux de trésorerie",
     options=list(SCENARIOS.keys())
 )
 
@@ -53,19 +53,19 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.session_state.cf_values[0] = st.number_input(
-        "Zahlungsstrom Jahr 1 (Tsd. USD)",
+        "Flux de trésorerie année 1 (milliers USD)",
         value=float(st.session_state.cf_values[0]),
         step=1.0,
         format="%.2f"
     )
     st.session_state.cf_values[1] = st.number_input(
-        "Zahlungsstrom Jahr 2 (Tsd. USD)",
+        "Flux de trésorerie année 2 (milliers USD)",
         value=float(st.session_state.cf_values[1]),
         step=1.0,
         format="%.2f"
     )
     st.session_state.cf_values[2] = st.number_input(
-        "Zahlungsstrom Jahr 3 (Tsd. USD)",
+        "Flux de trésorerie année 3 (milliers USD)",
         value=float(st.session_state.cf_values[2]),
         step=1.0,
         format="%.2f"
@@ -73,13 +73,13 @@ with col1:
 
 with col2:
     st.session_state.cf_values[3] = st.number_input(
-        "Zahlungsstrom Jahr 4 (Tsd. USD)",
+        "Flux de trésorerie année 4 (milliers USD)",
         value=float(st.session_state.cf_values[3]),
         step=1.0,
         format="%.2f"
     )
     st.session_state.cf_values[4] = st.number_input(
-        "Zahlungsstrom Jahr 5 (Tsd. USD)",
+        "Flux de trésorerie année 5 (milliers USD)",
         value=float(st.session_state.cf_values[4]),
         step=1.0,
         format="%.2f"
@@ -90,23 +90,23 @@ cash_flows = st.session_state.cf_values
 # ---------- Data ----------
 df = pd.DataFrame(
     {
-        "Jahr": years,
-        "Zahlungsströme": cash_flows,
+        "Année": years,
+        "Flux de trésorerie": cash_flows,
     }
 )
 
 # ---------- Chart ----------
-st.subheader("Verlauf der Zahlungsströme")
+st.subheader("Profil des flux de trésorerie")
 
 bars = (
     alt.Chart(df)
     .mark_bar(color=LINE_COLOR)
     .encode(
-        x=alt.X("Jahr:O", title="Jahr", axis=alt.Axis(labelAngle=0)),
-        y=alt.Y("Zahlungsströme:Q", title="Zahlungsströme (Tsd. USD)"),
+        x=alt.X("Année:O", title="Année", axis=alt.Axis(labelAngle=0)),
+        y=alt.Y("Flux de trésorerie:Q", title="Flux de trésorerie (milliers USD)"),
         tooltip=[
-            alt.Tooltip("Jahr:O", title="Jahr"),
-            alt.Tooltip("Zahlungsströme:Q", title="Zahlungsströme (Tsd. USD)", format=",.2f"),
+            alt.Tooltip("Année:O", title="Année"),
+            alt.Tooltip("Flux de trésorerie:Q", title="Flux de trésorerie (milliers USD)", format=",.2f"),
         ],
     )
 )
@@ -121,5 +121,5 @@ present_values = [
 
 valuation = sum(present_values)
 
-st.subheader("Bewertung")
-st.metric("Bewertungsergebnis", f"USD {valuation:,.0f}k")
+st.subheader("Évaluation")
+st.metric("Résultat de l’évaluation", f"USD {valuation:,.0f}k")
